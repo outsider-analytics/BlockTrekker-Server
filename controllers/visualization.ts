@@ -1,8 +1,6 @@
 import { getTable } from "../mongo"
-import { combineArrays } from "../utils";
 
 const queries = getTable('queries');
-const queryResults = getTable('query_results');
 
 export const getAllVisualizationNames = async (user: string) => {
     const res = await queries.find({ user, visualizations: { $exists: true } }).project({ _id: 0, queryId: 1, visualizations: 1 }).toArray();
