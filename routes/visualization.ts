@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { getAllVisualizationsForUser, removeVisualization, saveVisualization } from "../controllers/visualization";
+import { getAllVisualizationNames, removeVisualization, saveVisualization } from "../controllers/visualization";
 
 const router = Router();
 
-router.get('/all', async (req, res) => {
+router.get('/names', async (req, res) => {
     try {
         const { user } = req.query;
-        const results = await getAllVisualizationsForUser(user as string);
+        const results = await getAllVisualizationNames(user as string);
         res.status(200).send({ results });
     } catch (err) {
         console.log('Error: ', err);
