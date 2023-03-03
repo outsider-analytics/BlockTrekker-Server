@@ -16,9 +16,9 @@ router.get('/:user', async (req, res) => {
 
 router.post('/save/:user', async (req, res) => {
     try {
-        const { dashboard, queries } = req.body;
+        const dashboard = req.body;
         const { user } = req.params;
-        await saveDashboard(user, dashboard, queries);
+        await saveDashboard(user, dashboard);
         res.status(200).send('Saved');
     } catch (err) {
         console.log('Error: ', err);
@@ -28,10 +28,10 @@ router.post('/save/:user', async (req, res) => {
 
 router.post('/visualization/:user', async (req, res) => {
     try {
-        const widget = req.body;
+        const { dashboard, widget } = req.body;
         const { user } = req.params;
-        await addVisualizationToDashboard(user, widget);
-        res.status(200).send('Saved');
+        const results = await addVisualizationToDashboard(user, widget, dashboard);
+        res.status(200).send(results);
     } catch (err) {
         console.log('Error: ', err);
         res.status(500).send(err);

@@ -1,11 +1,17 @@
 import { getTable } from "../mongo"
+import { getAllQueryResults, getQueryResults } from "./query";
 
 const dashboards = getTable('dashboards');
-const queryResults = getTable('query_results');
 
-export const addVisualizationToDashboard = async (user: string, widget: any) => {
+export const addVisualizationToDashboard = async (user: string, widget: any, dashboard?: any) => {
+    // If dashboard has not been saved yet then dashboard will first be saved
+    if (dashboard) {
+        await saveDashboard(user, dashboard);
+    }
     const queryId = widget.item.content.id.split('-')[0];
     await dashboards.updateOne({ user }, { $addToSet: { queries: queryId }, $push: { dashboardWidgets: widget } })
+    const results = await getQueryResults(queryId);
+    return results;
 }
 
 export const getDashboard = async (user: string) => {
@@ -13,15 +19,19 @@ export const getDashboard = async (user: string) => {
         { user },
         { projection: { _id: 0, dashboardWidgets: 1, queries: 1 } }
     );
-    const results = await queryResults.find({ queryId: { $in: dashboard?.queries ?? [] } }).project({ _id: 0, queryId: 1, results: 1 }).toArray()
-    const queryData = results.reduce((obj, query) => {
-        obj[query.queryId] = query.results;
-        return obj;
-    }, {})
+    let queryData = {};
+    // If dsahboard exists and query data then get query results
+    if (dashboard && dashboard.queries) {
+        const results = await getAllQueryResults(dashboard.queries);
+        queryData = results.reduce((obj, query) => {
+            obj[query.queryId] = query.results;
+            return obj;
+        }, {})
+    }
     return { dashboard, queryData }
 }
 
-export const saveDashboard = async (user: string, dashboardWidgets: any, queries: any) => {
+export const saveDashboard = async (user: string, dashboardWidgets: any) => {
     await dashboards.updateOne(
         { user },
         { $set: { dashboardWidgets, user } },

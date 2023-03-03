@@ -29,9 +29,14 @@ export const getQuery = async (queryId: string) => {
     };
 }
 
+export const getAllQueryResults = async (queryIds: string[]) => {
+    // TODO: Replace with BigQuery
+    return await queryResults.find({ queryId: { $in: queryIds } }).project({ _id: 0, queryId: 1, results: 1 }).toArray();
+}
+
 export const getQueryResults = async (queryId: string) => {
     // TODO: Replace with BigQuery
-    return await queryResults.findOne({ queryId });
+    return await queryResults.findOne({ queryId }, { projection: { _id: 0, queryId: 1, results: 1 } });
 }
 
 const storeQuery = async (queryId: string, data: any) => {

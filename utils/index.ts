@@ -1,3 +1,5 @@
+import { v4 } from 'uuid';
+
 export const combineArrays = (arr1: any, arr2: any, key: string) => {
     // Create a new object to store the combined values
     const combined: any = {};
@@ -23,6 +25,11 @@ export const combineArrays = (arr1: any, arr2: any, key: string) => {
 
     // Convert the combined object back into an array and return it
     return Object.values(combined);
+}
+
+export const generateKey = () => {
+    const buffer = v4(null, Buffer.alloc(16));
+    return buffer.toString('hex');
 }
 
 export const jsonToCsv = (data: any) => {
