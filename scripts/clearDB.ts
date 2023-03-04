@@ -10,7 +10,7 @@ import readline from 'readline';
 
     const prompt = async function () {
         return new Promise((resolve, reject) => {
-            rl.question('Are you sure you want to clear all collections? This action is irreversable (y/n) ', function (answer) {
+            rl.question('Are you sure you want to clear all collections? This action is irreversible (y/n) ', function (answer) {
                 const lowerAnswer = answer.toLowerCase();
                 if (lowerAnswer === 'yes' || lowerAnswer === 'y') {
                     resolve(true);
@@ -36,13 +36,14 @@ import readline from 'readline';
             for (const collection of COLLECTIONS) {
                 console.log(`Connection to ${collection} collection`);
                 const col = database.collection(collection);
-                console.log(`Deleting all documents for ${col}`);
+                console.log(`Deleting all documents for ${collection}`);
                 await col.deleteMany({});
-                console.log(`All documents deleted for ${col}`);
+                console.log(`All documents deleted for ${collection}`);
             }
-            console.log(`All collections cleard for ${mongoConfig.dbName}`);
+            console.log(`All collections cleared for ${mongoConfig.dbName}`);
         } catch (err) {
             console.log('Error: ', err);
         }
+        process.exit();
     }
 })();

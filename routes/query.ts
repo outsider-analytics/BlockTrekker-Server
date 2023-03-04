@@ -6,9 +6,11 @@ import {
     getAllQueriesForUser,
     getQuery,
     getQueryResults,
+    getTables,
     saveNewQuery,
     storeTemporaryResults,
-    updateQuery
+    updateQuery,
+    updateQueryMetaData
 } from '../controllers/query';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -100,12 +102,30 @@ router.post('/execute', async (req, res) => {
 router.post('/save', async (req, res) => {
     try {
         const data = req.body;
-        const queryId = await saveNewQuery(data);
-        res.status(200).send({ queryId });
+        if (data.query) {
+            const queryId = await saveNewQuery(data);
+            res.status(200).send({ queryId });
+        } else {
+            const { description, name, queryId } = req.body;
+            await updateQueryMetaData(queryId, description, name);
+            res.status(200).send('Metadata saved');
+        }
     } catch (err) {
         console.log('Error: ', err);
         res.status(500).send(err);
     }
 });
+
+router.get('/tables', async (req, res) => {
+    try {
+        const { user } = req.query;
+        const tables = await getTables(user as string);
+        res.status(200).send(tables);
+    }
+    catch (err) {
+        console.log('Error: ', err);
+        res.status(500).send(err);
+    }
+})
 
 export default router;

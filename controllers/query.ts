@@ -1,6 +1,6 @@
 import { getTable } from "../mongo"
 import { v4 as uuidv4 } from "uuid";
-import { combineArrays } from "../utils";
+import { combineArrays, generateUniqueId } from "../utils";
 
 const queries = getTable('queries');
 const queryResults = getTable('query_results');
@@ -9,22 +9,31 @@ const temporaryResults = getTable('temporary_results');
 export const saveNewQuery = async (data: any) => {
     const { user } = data;
     const results = (await temporaryResults.findOne({ user }))!.results;
-    const queryId = uuidv4().replace(/-/g, '');
+    const queryId = generateUniqueId();
+    const columns = parseColumns(results[0]);
     await storeQueryResults(queryId, results);
-    await storeQuery(queryId, data);
+    await storeQuery(queryId, { columns, ...data });
     return queryId;
 }
 
 export const getAllQueriesForUser = async (user: string) => {
-    return await queries.find({ user }).project({ _id: 0, queryId: 1 }).toArray();
+    return await queries.find({ user }).project({
+        _id: 0,
+        name: 1,
+        queryId: 1,
+        visualizationCount: { $size: { $ifNull: ["$visualizations", []] } }
+    }
+    ).toArray();
 }
 
 export const getQuery = async (queryId: string) => {
     const query = await queries.findOne({ queryId });
     const results = await getQueryResults(queryId);
     return {
-        results: results!.results,
-        query: query!.query,
+        description: query?.description,
+        name: query?.name,
+        results: results?.results,
+        query: query?.query,
         visualizations: query?.visualizations
     };
 }
@@ -37,6 +46,14 @@ export const getAllQueryResults = async (queryIds: string[]) => {
 export const getQueryResults = async (queryId: string) => {
     // TODO: Replace with BigQuery
     return await queryResults.findOne({ queryId }, { projection: { _id: 0, queryId: 1, results: 1 } });
+}
+
+export const getTables = async (user: string) => {
+    return await queries.find({ user }).project({ _id: 0, columns: 1, name: 1 }).toArray();
+}
+
+const parseColumns = (row: any) => {
+    return Object.keys(row);
 }
 
 const storeQuery = async (queryId: string, data: any) => {
@@ -56,4 +73,8 @@ export const storeTemporaryResults = async (user: string, results: any[]) => {
 export const updateQuery = async (query: string, queryId: string, results: any[]) => {
     await queries.updateOne({ queryId }, { $set: { query } });
     await storeQueryResults(queryId, results);
+}
+
+export const updateQueryMetaData = async (queryId: string, description: string, name: string) => {
+    await queries.updateOne({ queryId }, { $set: { description, name } });
 }

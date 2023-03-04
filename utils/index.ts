@@ -27,7 +27,7 @@ export const combineArrays = (arr1: any, arr2: any, key: string) => {
     return Object.values(combined);
 }
 
-export const generateKey = () => {
+export const generateUniqueId = () => {
     const buffer = v4(null, Buffer.alloc(16));
     return buffer.toString('hex');
 }
