@@ -14,5 +14,6 @@ export const bigQueryToJS: { [key: string]: string } = {
     STRUCT: 'Object', // or a custom Struct class
 };
 
+export const PUBLIC_DATA_SETS = ['contracts', 'stock_tables'];
 export const PROJECT_ID = 'ethtables';
 export const USER_TABLES = 'user_tables';

@@ -4,8 +4,10 @@ import { writeFile, unlink } from 'fs';
 import { generateUniqueId, jsonToCsv } from '../utils';
 import {
     getAllQueriesForUser,
+    getDatasets,
     getQuery,
     getQueryResults,
+    getTableColumns,
     getTables,
     parseColumns,
     saveNewQuery,
@@ -32,6 +34,28 @@ router.get('/all', async (req, res) => {
         const { user } = req.query;
         const queries = await getAllQueriesForUser(user as string);
         res.status(200).send({ queries });
+    } catch (err) {
+        console.log('Error: ', err);
+        res.status(500).send(err);
+    }
+});
+
+router.get('/columns', async (req, res) => {
+    try {
+        const { dataset, table } = req.query;
+        const schema = await getTableColumns(dataset as string, table as string);
+        res.status(200).send(schema);
+    }
+    catch (err) {
+        console.log('Error: ', err);
+        res.status(500).send(err);
+    }
+})
+
+router.get('/datasets', async (req, res) => {
+    try {
+        const tables = await getDatasets();
+        res.status(200).send(tables)
     } catch (err) {
         console.log('Error: ', err);
         res.status(500).send(err);

@@ -1,25 +1,8 @@
 import { getTable } from "../mongo"
-import { generateUniqueId, wrapTableInTemplates } from "../utils";
+import { generateUniqueId } from "../utils";
 import { getBigQueryClient } from "../bigQuery";
-import { USER_TABLES } from "../constants";
-
+import { PUBLIC_DATA_SETS, USER_TABLES } from "../constants";
 const queries = getTable('queries');
-const queryResults = getTable('query_results');
-
-export const saveNewQuery = async (data: any) => {
-    const { user } = data;
-    // Rename temporary table
-    const queryId = generateUniqueId();
-    const bigQueryClient = getBigQueryClient();
-    const dataset = bigQueryClient.dataset('user_tables');
-    const fromTable = dataset.table(`${user}_temp`);
-    const destTable = dataset.table(`${user}_${queryId}`);
-    await fromTable.copy(destTable, fromTable.metadata);
-    const [metadata] = await fromTable.getMetadata();
-    const { columnNames, columnTypes } = parseColumns(metadata.schema.fields);
-    await storeQuery(queryId, { columnNames, columnTypes, ...data });
-    return queryId;
-}
 
 export const getAllQueriesForUser = async (user: string) => {
     return await queries.find({ user }).project({
@@ -55,12 +38,31 @@ export const getAllQueryResults = async (queryIds: string[], user: string) => {
     }))
 }
 
+export const getDatasets = async () => {
+    const bigQueryClient = getBigQueryClient();
+    const allTables: any[] = [];
+    for (const name of PUBLIC_DATA_SETS) {
+        const dataset = bigQueryClient.dataset(name);
+        const tables = await dataset.getTables();
+        allTables.push({ [name]: tables[0].map(table => table.id || '') });
+    }
+    return allTables;
+}
+
 export const getQueryResults = async (queryId: string, user: string) => {
     // TODO: Replace with BigQuery
     const bigQueryClient = getBigQueryClient();
     const dataset = bigQueryClient.dataset('user_tables');
     const table = dataset.table(`${user}_${queryId}`);
     return (await table.getRows())[0];
+}
+
+export const getTableColumns = async (dataset: string, table: string) => {
+    const bigQueryClient = getBigQueryClient();
+    const set = bigQueryClient.dataset(dataset);
+    const tbl = set.table(table);
+    const [metadata] = await tbl.getMetadata();
+    return metadata.schema.fields;
 }
 
 export const getTables = async (user: string) => {
@@ -79,6 +81,21 @@ export const parseColumns = (fields: any) => {
     const columnNames = fields.map(({ name }: { name: string }) => name);
     const columnTypes = fields.map(({ type }: { type: string }) => type);
     return { columnNames, columnTypes }
+}
+
+export const saveNewQuery = async (data: any) => {
+    const { user } = data;
+    // Rename temporary table
+    const queryId = generateUniqueId();
+    const bigQueryClient = getBigQueryClient();
+    const dataset = bigQueryClient.dataset('user_tables');
+    const fromTable = dataset.table(`${user}_temp`);
+    const destTable = dataset.table(`${user}_${queryId}`);
+    await fromTable.copy(destTable, fromTable.metadata);
+    const [metadata] = await fromTable.getMetadata();
+    const { columnNames, columnTypes } = parseColumns(metadata.schema.fields);
+    await storeQuery(queryId, { columnNames, columnTypes, ...data });
+    return queryId;
 }
 
 const storeQuery = async (queryId: string, data: any) => {
