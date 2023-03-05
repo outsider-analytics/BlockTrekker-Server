@@ -108,7 +108,9 @@ router.post('/dry-run', async (req, res) => {
             location: 'US',
         };
         const [job] = await bigQueryClient.createQueryJob(options);
+        console.log('Stats: ', job.metadata.statistics)
         const bytes = job.metadata.statistics.query.estimatedBytesProcessed;
+        console.log('Bytes: ', bytes);
         const cost = (bytes / (10 ** 12) * 5);
         res.status(200).send({ cost });
     } catch (err) {

@@ -3,7 +3,7 @@ import { bigQueryToJS } from '../constants';
 
 export const castColumn = (value: any, type: string) => {
     const jsType = bigQueryToJS[type];
-    if (jsType === 'string') {
+    if (jsType === 'string' || jsType === 'Date') {
         return `'${value}'`
     } else {
         return value
