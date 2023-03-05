@@ -6,14 +6,14 @@ import { initMongo } from './mongo';
 import { mongoConfig } from './config';
 
 const app = express();
-const port = 8080;
+const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
 
-app.listen(port, async () => {
+app.listen(PORT, async () => {
     initBigQuery();
     console.log('Big query initialized 💿')
     await initMongo(mongoConfig.mongoUrl, mongoConfig.dbName);
@@ -21,5 +21,5 @@ app.listen(port, async () => {
     routes.forEach(({ route, baseRoute }: { route: any, baseRoute: string }) => {
         app.use(`/${baseRoute}`, route);
     });
-    return console.log(`🔥 Express is listening at http://localhost:${port} 🔥`);
+    return console.log(`🔥 Express is listening at http://localhost:${PORT} 🔥`);
 });
