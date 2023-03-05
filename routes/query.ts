@@ -99,6 +99,24 @@ router.get('/download/:id', async (req, res) => {
     });
 });
 
+router.post('/dry-run', async (req, res) => {
+    try {
+        const { query } = req.body;
+        const options = {
+            query,
+            dry_run: true,
+            location: 'US',
+        };
+        const [job] = await bigQueryClient.createQueryJob(options);
+        const bytes = job.metadata.statistics.query.estimatedBytesProcessed;
+        const cost = (bytes / (10 ** 12) * 5);
+        res.status(200).send({ cost });
+    } catch (err) {
+        console.log('Error: ', err);
+        res.status(500).send(err);
+    }
+});
+
 router.post('/execute', async (req, res) => {
     try {
         const { id, name, query, user } = req.body;
