@@ -1,4 +1,14 @@
 import { v4 } from 'uuid';
+import { bigQueryToJS } from '../constants';
+
+export const castColumn = (value: any, type: string) => {
+    const jsType = bigQueryToJS[type];
+    if (jsType === 'string') {
+        return `'${value}'`
+    } else {
+        return value
+    }
+}
 
 export const combineArrays = (arr1: any, arr2: any, key: string) => {
     // Create a new object to store the combined values
@@ -52,4 +62,8 @@ export const jsonToCsv = (data: any) => {
     });
 
     return `${csvHeader}\n${csvRows.join('\n')}`;
+}
+
+export const wrapTableInTemplates = (table: string) => {
+    return '`' + table + '`';
 }

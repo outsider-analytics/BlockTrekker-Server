@@ -10,8 +10,8 @@ export const addVisualizationToDashboard = async (user: string, widget: any, das
     }
     const queryId = widget.item.content.id.split('-')[0];
     await dashboards.updateOne({ user }, { $addToSet: { queries: queryId }, $push: { dashboardWidgets: widget } })
-    const results = await getQueryResults(queryId);
-    return results;
+    const results = await getQueryResults(queryId, user);
+    return { queryId, results };
 }
 
 export const getDashboard = async (user: string) => {
@@ -22,11 +22,12 @@ export const getDashboard = async (user: string) => {
     let queryData = {};
     // If dsahboard exists and query data then get query results
     if (dashboard && dashboard.queries) {
-        const results = await getAllQueryResults(dashboard.queries);
+        const results = await getAllQueryResults(dashboard.queries, user);
         queryData = results.reduce((obj, query) => {
             obj[query.queryId] = query.results;
             return obj;
-        }, {})
+        }, {} as any)
+
     }
     return { dashboard, queryData }
 }

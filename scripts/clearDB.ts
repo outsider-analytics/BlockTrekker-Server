@@ -27,7 +27,7 @@ import readline from 'readline';
     rl.close();
     // Comment collections out as needed
     if (shouldClear) {
-        const COLLECTIONS = ['api_keys', 'dashboards', 'queries', 'query_results', 'temporary_results'];
+        const COLLECTIONS = ['api_keys', 'custom_endpoints', 'dashboards', 'queries'];
 
         try {
             const client = await MongoClient.connect(mongoConfig.mongoUrl);

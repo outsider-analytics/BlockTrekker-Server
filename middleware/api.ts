@@ -12,6 +12,7 @@ export const authenticateKey = async (req: Request, res: Response, next: NextFun
         if (!key) {
             res.status(403).send('Invalid API key')
         } else {
+            res.locals.apiKey = apiKey;
             next();
         }
     }

@@ -1,18 +1,17 @@
 import { getBigQueryClient } from '../bigQuery';
 import { Router } from "express";
 import { writeFile, unlink } from 'fs';
-import { jsonToCsv } from '../utils';
+import { generateUniqueId, jsonToCsv } from '../utils';
 import {
     getAllQueriesForUser,
     getQuery,
     getQueryResults,
     getTables,
+    parseColumns,
     saveNewQuery,
-    storeTemporaryResults,
     updateQuery,
     updateQueryMetaData
 } from '../controllers/query';
-import { v4 as uuidv4 } from 'uuid';
 
 const bigQueryClient = getBigQueryClient();
 const router = Router();
@@ -41,14 +40,15 @@ router.get('/all', async (req, res) => {
 
 router.get('/download/:id', async (req, res) => {
     const { id } = req.params;
-    const fileType = req.query.type as string;
+    const { type, user } = req.query;
     // TODO: Add CSV
-    const fileName = `${uuidv4()}.${fileType.toLowerCase()}`
+    const uniqueId = generateUniqueId();
+    const fileName = `${uniqueId}.${(type as string).toLowerCase()}`
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-    const json = (await getQueryResults(id as string))!.results;
+    const json = (await getQueryResults(id as string, user as string));
     let fileString = '';
-    if (fileType === 'CSV') {
+    if (type === 'CSV') {
         fileString = jsonToCsv(json);
     } else {
         fileString = JSON.stringify(json);
@@ -77,20 +77,23 @@ router.get('/download/:id', async (req, res) => {
 
 router.post('/execute', async (req, res) => {
     try {
-        const { id, query, user } = req.body;
+        const { id, name, query, user } = req.body;
+        const dataset = bigQueryClient.dataset('user_tables');
+        const destination = dataset.table(id && name ? `${user}_${name}` : `${user}_temp`);
         const options = {
             query,
+            // Destination is temporary if no id exists
+            destination,
+            write_disposition: 'WRITE_TRUNCATE',
             location: 'US',
         };
         const [job] = await bigQueryClient.createQueryJob(options);
+        const [metadata] = await destination.getMetadata();
         const [rows] = await job.getQueryResults();
-        // If no id we know this is a new query
-        if (!id) {
-            // Update temporary results
-            await storeTemporaryResults(user, rows);
-        } else {
+        if (id) {
             // Update saved query
-            await updateQuery(query, id, rows);
+            const columns = parseColumns(metadata.schema.fields);
+            await updateQuery(columns, query, id);
         }
         res.status(200).send({ rows });
     } catch (err) {
