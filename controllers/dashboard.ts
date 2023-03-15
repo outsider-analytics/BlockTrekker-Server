@@ -3,12 +3,17 @@ import { getAllQueryResults, getQueryResults } from "./query";
 
 const dashboards = getTable('dashboards');
 
-export const addVisualizationToDashboard = async (user: string, widget: any, dashboard?: any) => {
+export const addWidgetToDashboard = async (user: string, widget: any, dashboard?: any) => {
     // If dashboard has not been saved yet then dashboard will first be saved
+    const { content } = widget.item;
+    // const update
     if (dashboard) {
         await saveDashboard(user, dashboard);
     }
-    const queryId = widget.item.content.id.split('-')[0];
+    // if () {
+
+    // }
+    const queryId = content.id.split('-')[0];
     await dashboards.updateOne({ user }, { $addToSet: { queries: queryId }, $push: { dashboardWidgets: widget } })
     const results = await getQueryResults(queryId, user);
     return { queryId, results };

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addVisualizationToDashboard, getDashboard, saveDashboard } from "../controllers/dashboard";
+import { addWidgetToDashboard, getDashboard, saveDashboard } from "../controllers/dashboard";
 
 const router = Router();
 
@@ -26,11 +26,11 @@ router.post('/save/:user', async (req, res) => {
     }
 });
 
-router.post('/visualization/:user', async (req, res) => {
+router.post('/widget/:user', async (req, res) => {
     try {
         const { dashboard, widget } = req.body;
         const { user } = req.params;
-        const results = await addVisualizationToDashboard(user, widget, dashboard);
+        const results = await addWidgetToDashboard(user, widget, dashboard);
         res.status(200).send(results);
     } catch (err) {
         console.log('Error: ', err);

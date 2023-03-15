@@ -8,6 +8,7 @@
   "type": "module",
   "scripts": {
     "clear-db": "ts-node scripts/clearDB.ts",
+    "dev": "nodemon app.ts",
     "start": "ts-node app.ts"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongodb": "^5.0.1",
+    "nodemon": "^2.0.21",
     "ts-node": "^10.9.1",
     "uuid": "^9.0.0"
   }

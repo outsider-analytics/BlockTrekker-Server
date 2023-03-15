@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "blocktrekker",
+  "private_key_id": "17509d7334ad40809b298e1cabe3ecce6a687a92",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDDMeZflnItnuUV\nQdrkiQ+NWq+B8s76uy04GXxWmv4BUsZEHCNvpeFqu4x2FJ2s7+ebiG93hoyeAsSv\nW0amy8dMbjiQeyUzCa2HZecJHPqJ8nvilfUfJw6dJubV497FeZx7LtUHE6e5Oybb\n9zzjdWrrEJaiiFxZtuRElYwBybTEus8w4MH3BEGKVfn7QCNnuA0KRjkCtfzuzcF5\nS52yRtidduFdYM4gmPEzF9PLmchNaaNfSHtKQVkymhPjM1zIy8sYUJJ0JufbuZNr\nqoVV5HLqrrVy0dEj9X/gb6AR56YARlu43+KP6qC3zkEc6HuX10yiK3IzpVnBLuIw\nNi2Hyfy5AgMBAAECggEAAfzcGZAr4EHTNTvmwYPMafnwSNXfPHyRBBZ299Xi/nOI\napJgA9of+nQd3XJGc9t3ad2/qcPvxRwo4Ejjg+nHVN0myWMaHFZT+DXurUs8GUwk\nFPpQHGeQfjnQHORDAWt/nftdB/5XPzelJLybziA/+nuZEgalxS8wiDS591g7umjQ\nompK/FaqR5CVS1wXhVHAd+3tT3OI5Gyn2Gt5+zD5Qhw3vO/l1YmGxcj24RAstPsM\nFtkoemAOYfiue4uKiaSkqe9WXEkaDwvEdhl4kZnaXi9AlD8utWHJVu9nPN/Zq9sV\nZqosgnuIEy4Ppahg8uhkwMoAJ6Zy/kK3UypOhv9gkQKBgQD4W53hX5iEKXVky0X3\nDFgLTfBB7RNeJvprcrSOxxJFHc07v9FFwKwLFA+qS+iy56eiZo7yKWBJFqb4acbx\nkNFOMU3R+0sAVJt6qSrEOmijbJ8ZucKAAG68lRovfWJdo3fC9SbGWzgjMpdRXoxO\nDmiNbsF+IaXq26DPRbxPufxNhwKBgQDJM4EDG6+Lir2r3tVOZb7N/DavRIWSZ0ap\npfNCp0TPN7C6TJ2x9bXly5HhbtKh4NYDE78a89L2i7nO5/JJ1b2HAgnWkdnTK6eN\nAhUYzZnrVRMIf+iIZRPStwsTWb0x7qJx2m3jxfjqXPlsIjNnK+mf8TTzjht0K/OP\nEQj5RqPzvwKBgCOL2Vj8ebPQy0CV53mohqF3kj+dUvxSz9y5GialT3QdA9bdaXJ2\nVSlwwZ06KCATD+cqjqMSUPmlCFjdqt/APnTWkbDQKrftZCN2OuzC/18EmPDxqWjw\npujO3mSVqZKFZwq8U8RoIezHvOikg6hYX5Z+l6sZ3clzjdycuoser4HZAoGBALb3\nFDIMYjWmRFdgO1+gnMPawKvfxwvcyOCLXczWKXe68AZql9j2VaST26RCUF8PA+8m\nbNoIsmarp5ulR6qnKUP1sZajaY9kGmjbZO36QidEZRuMnZwzNrSe6f5909Pta2HX\nvaitJm+Rfuw7qbz/rONayMlXCFY7hbArUJrHB18nAoGBAK8VCppeunI1aH0AORdm\nMIb7oPnkj7uCfEvKNxZkAw9OL6jEBR2nkBF1rTqKr+SHkB6kFvJI9ug0dNg2rLit\ne/ubbRoQ5hN0Rp57PJgqhHzmmBmCLluQ6IdGiz/CIPASVkrHkIZjf5WbjSvNJcYo\nINEBNyRUqoyhl6QmcCn7G5Jl\n-----END PRIVATE KEY-----\n",
+  "client_email": "blocktrekkers-admin@blocktrekker.iam.gserviceaccount.com",
+  "client_id": "111802879462059997720",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/blocktrekkers-admin%40blocktrekker.iam.gserviceaccount.com"
+}
