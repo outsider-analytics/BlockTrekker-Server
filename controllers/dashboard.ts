@@ -6,17 +6,19 @@ const dashboards = getTable('dashboards');
 export const addWidgetToDashboard = async (user: string, widget: any, dashboard?: any) => {
     // If dashboard has not been saved yet then dashboard will first be saved
     const { content } = widget.item;
-    // const update
     if (dashboard) {
         await saveDashboard(user, dashboard);
     }
-    // if () {
-
-    // }
-    const queryId = content.id.split('-')[0];
-    await dashboards.updateOne({ user }, { $addToSet: { queries: queryId }, $push: { dashboardWidgets: widget } })
-    const results = await getQueryResults(queryId, user);
-    return { queryId, results };
+    // If element is visualization then fetch results
+    if (content.elementType === 'visualization') {
+        const queryId = content.id.split('-')[0];
+        await dashboards.updateOne({ user }, { $addToSet: { queries: queryId }, $push: { dashboardWidgets: widget } })
+        const results = await getQueryResults(queryId, user);
+        return { queryId, results };
+    } else {
+        await dashboards.updateOne({ user }, { $push: { dashboardWidgets: widget } });
+        return {};
+    }
 }
 
 export const getDashboard = async (user: string) => {
