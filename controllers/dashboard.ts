@@ -46,3 +46,11 @@ export const saveDashboard = async (user: string, dashboardWidgets: any) => {
         { upsert: true }
     );
 }
+
+export const updateTextWidget = async (user: string, widget: any) => {
+    const { format, id, text } = widget;
+    await dashboards.updateOne(
+        { user, "dashboardWidgets.gridInstructions.i": id },
+        { $set: { "dashboardWidgets.$.item.content": { format, text } } }
+    );
+}
