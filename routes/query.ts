@@ -14,6 +14,8 @@ import {
     updateQuery,
     updateQueryMetaData
 } from '../controllers/query';
+import { ensureCredits } from '../middleware/query';
+import { debitCredits } from '../controllers/user';
 
 const bigQueryClient = getBigQueryClient();
 const router = Router();
@@ -117,9 +119,9 @@ router.post('/dry-run', async (req, res) => {
     }
 });
 
-router.post('/execute', async (req, res) => {
+router.post('/execute', ensureCredits, async (req, res) => {
     try {
-        const { id, name, query, user } = req.body;
+        const { id, cost, name, query, user } = req.body;
         const dataset = bigQueryClient.dataset('user_tables');
         const destination = dataset.table(id && name ? `${user}_${name}` : `${user}_temp`);
         const options = {
@@ -137,6 +139,7 @@ router.post('/execute', async (req, res) => {
             const columns = parseColumns(metadata.schema.fields);
             await updateQuery(columns, query, id);
         }
+        debitCredits(user, cost);
         res.status(200).send({ rows });
     } catch (err) {
         console.log('Err: ', err);

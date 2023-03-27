@@ -1,5 +1,8 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { PROJECT_ID, USER_TABLES } from '../constants'
+import { getTable } from '../mongo';
+
+const users = getTable('users');
 
 export const createUserTable = async (bigquery: BigQuery, user: string) => {
     const query = `
@@ -23,4 +26,21 @@ export const createUserTable = async (bigquery: BigQuery, user: string) => {
     job.on('complete', (metadata) => {
         console.log(`Created new view ${user} via job ${metadata.id}`);
     });
+}
+
+export const connectUser = async (user: string) => {
+    const res = (await users.findOneAndUpdate(
+        { user },
+        { $set: { user } },
+        { upsert: true }
+    )).value;
+    return res;
+}
+
+export const debitCredits = async (user: string, cost: number) => {
+    return users.updateOne({ user }, { $inc: { credits: -cost } })
+}
+
+export const getUserCredits = async (user: string) => {
+    return await users.findOne({ user }, { projection: { _id: 0, credits: 1 } });
 }
