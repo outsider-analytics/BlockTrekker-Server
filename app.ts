@@ -4,13 +4,35 @@ import cors from 'cors';
 import express from 'express';
 import { initMongo } from './mongo';
 import { mongoConfig } from './config';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import dotenv from 'dotenv';
+import { APP_ALLOWED_ORIGINS } from './constants';
+dotenv.config();
+
+const { SESSION_SECRET } = process.env;
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ credentials: true, origin: [...APP_ALLOWED_ORIGINS] }));
+
+app.use(session({
+    name: 'blocktrekker-session',
+    resave: true,
+    saveUninitialized: false,
+    secret: SESSION_SECRET ?? '',
+    store: MongoStore.create({
+        collectionName: 'sessions',
+        dbName: mongoConfig.dbName,
+        mongoUrl: mongoConfig.mongoUrl,
+        ttl: 3 * 24 * 60 * 60 * 1000,
+        autoRemove: 'native'
+    }),
+    cookie: { maxAge: 3 * 24 * 60 * 60 * 1000, secure: false, sameSite: true },
+}))
 
 
 app.listen(PORT, async () => {

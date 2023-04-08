@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { getAllVisualizationNames, removeVisualization, saveVisualization } from "../controllers/visualization";
+import { appMiddleware } from "../middleware/app";
 
 const router = Router();
 
-router.get('/names', async (req, res) => {
+router.get('/names', appMiddleware, async (req, res) => {
     try {
-        const { user } = req.query;
-        const results = await getAllVisualizationNames(user as string);
+        // @ts-ignore
+        const address = req.userAddress;
+        const results = await getAllVisualizationNames(address);
         res.status(200).send({ results });
     } catch (err) {
         console.log('Error: ', err);

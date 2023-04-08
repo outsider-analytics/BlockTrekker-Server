@@ -14,6 +14,8 @@ export const bigQueryToJS: { [key: string]: string } = {
     STRUCT: 'Object', // or a custom Struct class
 };
 
+export const APP_ALLOWED_ORIGINS = ['http://localhost:3000'];
+
 // export const PUBLIC_DATA_SETS = ['contract_tables', 'stock_tables'];
 export const PUBLIC_DATA_SETS = ['contract_tables'];
 export const PROJECT_ID = 'blocktrekker';
