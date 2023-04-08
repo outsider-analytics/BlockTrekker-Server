@@ -16,6 +16,7 @@ import {
 } from '../controllers/query';
 import { ensureCredits } from '../middleware/query';
 import { debitCredits } from '../controllers/user';
+import { appMiddleware } from '../middleware/app';
 
 const bigQueryClient = getBigQueryClient();
 const router = Router();
@@ -31,10 +32,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/all', async (req, res) => {
+router.get('/all', appMiddleware, async (req, res) => {
     try {
-        const { user } = req.query;
-        const queries = await getAllQueriesForUser(user as string);
+        // @ts-ignore
+        const address = req.userAddress;
+        const queries = await getAllQueriesForUser(address);
         res.status(200).send({ queries });
     } catch (err) {
         console.log('Error: ', err);
@@ -42,7 +44,7 @@ router.get('/all', async (req, res) => {
     }
 });
 
-router.get('/columns', async (req, res) => {
+router.get('/columns', appMiddleware, async (req, res) => {
     try {
         const { dataset, table } = req.query;
         const schema = await getTableColumns(dataset as string, table as string);
@@ -54,7 +56,7 @@ router.get('/columns', async (req, res) => {
     }
 })
 
-router.get('/datasets', async (req, res) => {
+router.get('/datasets', appMiddleware, async (_req, res) => {
     try {
         const tables = await getDatasets();
         res.status(200).send(tables)
@@ -64,15 +66,17 @@ router.get('/datasets', async (req, res) => {
     }
 });
 
-router.get('/download/:id', async (req, res) => {
+router.get('/download/:id', appMiddleware, async (req, res) => {
+    // @ts-ignore
+    const address = req.userAddress
     const { id } = req.params;
-    const { type, user } = req.query;
+    const { type } = req.query;
     // TODO: Add CSV
     const uniqueId = generateUniqueId();
     const fileName = `${uniqueId}.${(type as string).toLowerCase()}`
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-    const json = (await getQueryResults(id as string, user as string));
+    const json = (await getQueryResults(id as string, address));
     let fileString = '';
     if (type === 'CSV') {
         fileString = jsonToCsv(json);
@@ -164,10 +168,11 @@ router.post('/save', async (req, res) => {
     }
 });
 
-router.get('/tables', async (req, res) => {
+router.get('/tables', appMiddleware, async (req, res) => {
     try {
-        const { user } = req.query;
-        const tables = await getTables(user as string);
+        // @ts-ignore
+        const address = req.userAddress;
+        const tables = await getTables(address);
         res.status(200).send(tables);
     }
     catch (err) {

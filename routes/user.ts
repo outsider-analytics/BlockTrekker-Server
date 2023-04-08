@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getUserCredits } from "../controllers/user";
 import { generateNonce } from "siwe";
 import { ErrorTypes, SiweMessage } from "siwe";
+import { appMiddleware } from "../middleware/app";
 
 const router = Router();
 
@@ -48,10 +49,11 @@ router.post('/connect', async (req, res) => {
     }
 });
 
-router.get('/credits', async (req, res) => {
+router.get('/credits', appMiddleware, async (req, res) => {
     try {
-        const { user } = req.query;
-        const credits = await getUserCredits(user as string);
+        // @ts-ignore
+        const address = req.userAddress;
+        const credits = await getUserCredits(address);
         res.status(200).send(credits);
     } catch (err) {
         console.log('Error: ', err);
@@ -59,19 +61,15 @@ router.get('/credits', async (req, res) => {
     }
 });
 
-router.delete('/disconnect', async (req, res) => {
+router.delete('/disconnect', appMiddleware, async (req, res) => {
     try {
-        if (!req.session) {
-            res.status(422).send('Session not found.');
-        }
-        const sessionId = req.session.id;
         req.session.destroy((err) => {
             if (err) {
                 console.log('Error: ', err);
             } else {
                 // @ts-ignore // TODO: Remove ts-ignore
                 req.session = null;
-                res.clearCookie(sessionId, { path: '/' }).send('Session cleared');
+                res.clearCookie('blocktrekker-session', { path: '/' }).send('Session cleared');
             }
         });
     } catch (err) {
@@ -92,10 +90,9 @@ router.get('/nonce', async (req, res) => {
     }
 });
 
-router.get('/reconnect', async (req, res) => {
+router.get('/reconnect', appMiddleware, async (_req, res) => {
     try {
-        // @ts-ignore // TODO: Remove ts-ignore
-        res.status(200).send({ hasSession: !!req.session.siwe });
+        res.status(200).send({ hasSession: true });
     } catch (err) {
         console.log('Error: ', err);
         res.status(500).send(err);

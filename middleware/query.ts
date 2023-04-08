@@ -2,7 +2,7 @@ import { NextFunction, Response, Request } from "express";
 import { getUserCredits } from "../controllers/user";
 
 export const ensureCredits = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: Need to ensure cost is retrieved somehow for api call. Right now only assumes this can
+    // TODO: Need to ensure cost is retrieved somehow for api call. Right now  assumes this can
     // be done through browser
     const { cost, user } = req.body;
     const credits = await getUserCredits(user);

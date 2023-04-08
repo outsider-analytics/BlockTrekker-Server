@@ -7,6 +7,7 @@ import { mongoConfig } from './config';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import dotenv from 'dotenv';
+import { APP_ALLOWED_ORIGINS } from './constants';
 dotenv.config();
 
 const { SESSION_SECRET } = process.env;
@@ -16,11 +17,11 @@ const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors({ credentials: true, origin: ['http://localhost:3000'] }));
+app.use(cors({ credentials: true, origin: [...APP_ALLOWED_ORIGINS] }));
 
 app.use(session({
     name: 'blocktrekker-session',
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     secret: SESSION_SECRET ?? '',
     store: MongoStore.create({
