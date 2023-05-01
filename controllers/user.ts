@@ -42,5 +42,6 @@ export const debitCredits = async (user: string, cost: number) => {
 }
 
 export const getUserCredits = async (user: string) => {
-    return await users.findOne({ user }, { projection: { _id: 0, credits: 1 } });
+    const res = await users.findOne({ user }, { projection: { _id: 0, credits: 1 } })
+    return res?.credits;
 }

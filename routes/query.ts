@@ -118,7 +118,6 @@ router.post('/dry-run', async (req, res) => {
         const cost = (bytes / (10 ** 12) * 5);
         res.status(200).send({ cost });
     } catch (err) {
-        console.log('Error: ', err);
         res.status(500).send(err);
     }
 });

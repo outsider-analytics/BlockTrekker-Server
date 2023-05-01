@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { getUserCredits } from "../controllers/user";
-import { generateNonce } from "siwe";
-import { ErrorTypes, SiweMessage } from "siwe";
+import { ErrorTypes, generateNonce, SiweMessage } from "siwe";
 import { appMiddleware } from "../middleware/app";
 
 const router = Router();
@@ -25,7 +24,8 @@ router.post('/connect', async (req, res) => {
         req.session.siwe = fields;
         // req.session.cookie.expires = new Date(fields.expirationTime);
         req.session.save();
-        res.status(200).send('Session saved');
+        const credits = await getUserCredits(fields.address);
+        res.status(200).send({ credits });
     } catch (err) {
         // @ts-ignore // TODO: Remove ts-ignore
         req.session.siwe = null;
@@ -90,9 +90,12 @@ router.get('/nonce', async (req, res) => {
     }
 });
 
-router.get('/reconnect', appMiddleware, async (_req, res) => {
+router.get('/reconnect', appMiddleware, async (req, res) => {
     try {
-        res.status(200).send({ hasSession: true });
+        // @ts-ignore
+        const address = req.userAddress;
+        const credits = await getUserCredits(address);
+        res.status(200).send({ credits, hasSession: true, });
     } catch (err) {
         console.log('Error: ', err);
         res.status(500).send(err);

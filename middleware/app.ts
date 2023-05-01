@@ -11,8 +11,9 @@ export const appMiddleware = (req: any, res: Response, next: NextFunction) => {
     })(req, res, () => {
         if (!req.session.siwe) {
             res.status(422).send("Session not found")
+        } else {
+            req.userAddress = req.session.siwe.address;
+            next();
         }
-        req.userAddress = req.session.siwe.address;
-        next();
     })
 }

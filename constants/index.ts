@@ -17,6 +17,6 @@ export const bigQueryToJS: { [key: string]: string } = {
 export const APP_ALLOWED_ORIGINS = ['http://localhost:3000'];
 
 // export const PUBLIC_DATA_SETS = ['contract_tables', 'stock_tables'];
-export const PUBLIC_DATA_SETS = ['contract_tables'];
+export const PUBLIC_DATA_SETS = ['decoded_projects'];
 export const PROJECT_ID = 'blocktrekker';
 export const USER_TABLES = 'user_tables';
